@@ -1,0 +1,5 @@
+MINECRAFT PORTABLE
+VERSION: v.0.0.6
+
+Este archivo identifica la version del paquete.
+Abre minecraft portable/index.html para iniciar el juego.
