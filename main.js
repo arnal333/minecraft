@@ -78,23 +78,23 @@ function primaryAction() {
 }
 
 const BLOCK_MINING = {
-  [B.GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: true },
-  [B.DIRT]: { hardness: 0.5, tool: 'shovel', requiresTool: true },
+  [B.GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: false },
+  [B.DIRT]: { hardness: 0.5, tool: 'shovel', requiresTool: false },
   [B.STONE]: { hardness: 1.5, tool: 'pickaxe', requiresTool: true },
-  [B.LOG]: { hardness: 2, tool: 'axe', requiresTool: true },
+  [B.LOG]: { hardness: 2, tool: 'axe', requiresTool: false },
   [B.LEAVES]: { hardness: 0.2, tool: null, requiresTool: false },
-  [B.PLANKS]: { hardness: 2, tool: 'axe', requiresTool: true },
-  [B.SAND]: { hardness: 0.5, tool: 'shovel', requiresTool: true },
+  [B.PLANKS]: { hardness: 2, tool: 'axe', requiresTool: false },
+  [B.SAND]: { hardness: 0.5, tool: 'shovel', requiresTool: false },
   [B.SNOW]: { hardness: 0.2, tool: 'shovel', requiresTool: true },
   [B.CACTUS]: { hardness: 0.4, tool: null, requiresTool: false },
-  [B.CRAFTING_TABLE]: { hardness: 2.5, tool: 'axe', requiresTool: true },
+  [B.CRAFTING_TABLE]: { hardness: 2.5, tool: 'axe', requiresTool: false },
   [B.IRON_ORE]: { hardness: 3, tool: 'pickaxe', requiresTool: true },
   [B.FURNACE]: { hardness: 3.5, tool: 'pickaxe', requiresTool: true },
-  [B.CHEST]: { hardness: 2.5, tool: 'axe', requiresTool: true },
+  [B.CHEST]: { hardness: 2.5, tool: 'axe', requiresTool: false },
   [B.GLASS]: { hardness: 0.3, tool: null, requiresTool: false },
-  [B.JUNGLE_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: true },
-  [B.SWAMP_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: true },
-  [B.TAIGA_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: true },
+  [B.JUNGLE_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: false },
+  [B.SWAMP_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: false },
+  [B.TAIGA_GRASS]: { hardness: 0.6, tool: 'shovel', requiresTool: false },
   [B.JUNGLE_LEAVES]: { hardness: 0.2, tool: null, requiresTool: false },
   [B.PORTAL_FRAME]: { hardness: 50, tool: 'pickaxe', requiresTool: true },
   [B.END_STONE]: { hardness: 3, tool: 'pickaxe', requiresTool: true },
@@ -115,10 +115,10 @@ function miningDuration(blockId) {
   if (!Number.isFinite(spec.hardness) || spec.hardness <= 0) return 0.05;
   const tool = selectedTool();
   const correctTool = !!spec.tool && tool.type === spec.tool;
-  // Fórmulas del documento de referencia: base 1.5 para herramienta correcta,
-  // base 5 si el bloque requiere herramienta y no se usa la adecuada, y 1.5
-  // para bloques que no requieren herramienta. Cada tick equivale a 0,05 s.
-  const base = spec.requiresTool && !correctTool ? spec.hardness * 5 : spec.hardness * 1.5;
+  // La dureza determina el tiempo a mano; las herramientas correctas aceleran.
+  // Tierra, arena, pasto y madera no penalizan por romperse a mano.
+  const canHarvest = !spec.requiresTool || correctTool;
+  const base = spec.hardness * (canHarvest ? 1.5 : 5);
   const multiplier = correctTool ? tool.speed : 1;
   return Math.max(0.05, Math.ceil((base / multiplier) / 0.05) * 0.05);
 }
