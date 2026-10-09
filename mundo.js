@@ -240,7 +240,7 @@ const FACES = [
   { d: [ 0, 0,-1], c: [[1,0,0,0,0],[0,0,0,1,0],[1,1,0,0,1],[0,1,0,1,1]] },
   { d: [ 0, 0, 1], c: [[0,0,1,0,0],[1,0,1,1,0],[0,1,1,0,1],[1,1,1,1,1]] }
 ];
-const AO_CURVE = [0.5, 0.68, 0.84, 1.0], UV_EPS = 0.02;
+const AO_CURVE = [0.5, 0.68, 0.84, 1.0], UV_EPS = 0.06;
 export const solidMat = new THREE.MeshLambertMaterial({ map: atlasTex, vertexColors: true, alphaTest: .5, side: THREE.DoubleSide });
 export const waterMat = new THREE.MeshLambertMaterial({ map: atlasTex, vertexColors: true, transparent: true, opacity: .82, depthWrite: false, side: THREE.DoubleSide });
 export const glassMat = new THREE.MeshLambertMaterial({ map: atlasTex, vertexColors: true, transparent: true, opacity: .88, alphaTest: .05, depthWrite: false, side: THREE.DoubleSide });
@@ -284,7 +284,7 @@ export function buildChunkMesh(chunkOrX, cz) {
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.p,3));
     g.setAttribute('normal',new THREE.Float32BufferAttribute(A.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.u,2));
     g.setAttribute('color',new THREE.Float32BufferAttribute(A.c,3));g.setIndex(A.i);g.computeBoundingSphere();
-    const m=new THREE.Mesh(g,mat);m.position.set(x0,0,z0);m.castShadow=mat===solidMat;m.receiveShadow=mat===solidMat;if(mat!==solidMat)m.renderOrder=1;worldGroup.add(m);return m;};
+    const m=new THREE.Mesh(g,mat);m.position.set(x0,0,z0);m.castShadow=mat===solidMat;m.receiveShadow=false;if(mat!==solidMat)m.renderOrder=1;worldGroup.add(m);return m;};
   ch.meshes.solid=make(S,solidMat,ch.meshes.solid);ch.meshes.water=make(W,waterMat,ch.meshes.water);
   ch.meshes.glass=make(G,glassMat,ch.meshes.glass);ch.dirty=false;
 }
