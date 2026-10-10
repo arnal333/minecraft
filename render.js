@@ -11,7 +11,8 @@ import {
 export const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+// Mantiene el coste de renderizado estable en pantallas de alta densidad.
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.prepend(renderer.domElement);
 
@@ -33,7 +34,7 @@ export const ambient = new THREE.AmbientLight(0xffffff, 1.3);
 scene.add(ambient);
 export const dirLight = new THREE.DirectionalLight(0xfff2dd, 2.2);
 dirLight.castShadow = true;
-dirLight.shadow.mapSize.set(2048, 2048);
+dirLight.shadow.mapSize.set(1024, 1024);
 dirLight.shadow.camera.left = -34;
 dirLight.shadow.camera.right = 34;
 dirLight.shadow.camera.top = 34;
