@@ -35,7 +35,7 @@ export const player = {
   health: 20, maxHealth: 20, invuln: 0, lastDamage: 0, regenT: 0,
   fallStart: 0, dead: false, inWater: false,
   xp: 0, level: 0, kills: 0, cactusT: 0,
-  hunger: 20, maxHunger: 20, exhaustion: 0, starveT: 0
+  hunger: 20, maxHunger: 20, exhaustion: 0, starveT: 0, creative: false
 };
 export const EYE = 1.62;
 export const inventory = new Array(36).fill(null);
@@ -120,7 +120,7 @@ export function findSpawn() {
 // ============================ DAÑO Y MUERTE ============================
 export function hurtPlayer(amount, src) {
   const p = player;
-  if (p.dead || p.invuln > 0 || amount <= 0) return;
+  if (p.creative || p.dead || p.invuln > 0 || amount <= 0) return;
   p.health = Math.max(0, p.health - amount);
   p.invuln = 0.5;
   p.lastDamage = gameTime;
@@ -410,6 +410,28 @@ export function viewDir() { return camera.getWorldDirection(_dir); }
 export function updatePlayer(dt) {
   const p = player;
   p.invuln -= dt;
+  if (p.creative) {
+    const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw);
+    const rx = Math.cos(p.yaw), rz = -Math.sin(p.yaw);
+    let wx = 0, wz = 0;
+    if (keys.KeyW) { wx += fx; wz += fz; }
+    if (keys.KeyS) { wx -= fx; wz -= fz; }
+    if (keys.KeyD) { wx += rx; wz += rz; }
+    if (keys.KeyA) { wx -= rx; wz -= rz; }
+    const wl = Math.hypot(wx, wz) || 1;
+    const speed = keys.ShiftLeft || keys.ShiftRight ? 12 : 7;
+    p.pos.x += wx / wl * speed * dt;
+    p.pos.z += wz / wl * speed * dt;
+    if (keys.Space) p.pos.y += speed * dt;
+    if (keys.ControlLeft || keys.ControlRight) p.pos.y -= speed * dt;
+    p.pos.y = Math.max(2, Math.min(WY - 2, p.pos.y));
+    p.vel.set(0, 0, 0); p.move.set(0, 0, 0); p.knock.set(0, 0, 0);
+    p.onGround = false; p.inWater = false; p.health = p.maxHealth; p.hunger = p.maxHunger;
+    camera.position.set(p.pos.x, p.pos.y + EYE, p.pos.z);
+    camera.rotation.y = p.yaw; camera.rotation.x = p.pitch; camera.rotation.z = 0;
+    const uw = $('underwater'); if (uw) uw.style.opacity = 0;
+    return;
+  }
   const feet = getBlock(Math.floor(p.pos.x), Math.floor(p.pos.y + 0.4), Math.floor(p.pos.z));
   p.inWater = feet === B.WATER;
   const fx = -Math.sin(p.yaw), fz = -Math.cos(p.yaw);

@@ -40,6 +40,25 @@ import { firePlayerArrow, updatePlayerArrows } from './arco.js';
 
 const $ = id => document.getElementById(id);
 let testMode=false;
+let survivalInventorySnapshot = null;
+function toggleCreativeMode() {
+  player.creative = !player.creative;
+  if (player.creative) {
+    survivalInventorySnapshot = inventory.map(s => s ? { ...s } : null);
+    const ids = [B.GRASS,B.DIRT,B.STONE,B.LOG,B.LEAVES,B.PLANKS,B.SAND,B.SNOW,B.CACTUS,B.GLASS,
+      B.JUNGLE_GRASS,B.SWAMP_GRASS,B.TAIGA_GRASS,B.IRON_ORE,B.CRAFTING_TABLE,B.FURNACE,B.CHEST,
+      B.PORTAL_FRAME,B.END_STONE,B.OBSIDIAN,I.WPICK,I.WAXE,I.WSHOVEL,I.ISWORD,I.BOW,I.ARROW,I.TORCH];
+    inventory.fill(null);
+    ids.slice(0, inventory.length).forEach((id,i) => { inventory[i] = { id, count: 64 }; });
+    player.health = player.maxHealth; player.hunger = player.maxHunger;
+    toast('Modo creativo: vuelo y bloques ilimitados · C para volver a supervivencia');
+  } else {
+    if (survivalInventorySnapshot) inventory.splice(0, inventory.length, ...survivalInventorySnapshot);
+    survivalInventorySnapshot = null;
+    toast('Modo supervivencia activado; inventario restaurado');
+  }
+  renderHearts(); renderHunger(); renderInventoryUI(); renderHotbar(); refreshHand();
+}
 
 // ============================================================================
 // ACCIONES DEL JUGADOR
@@ -224,11 +243,13 @@ function secondaryAction() {
     x + 1 > e.pos.x - e.w / 2 && x < e.pos.x + e.w / 2 &&
     y + 1 > e.pos.y && y < e.pos.y + e.h &&
     z + 1 > e.pos.z - e.w / 2 && z < e.pos.z + e.w / 2;
-  if (intersects(player) || mobs.some(intersects)) return;
+  if (!player.creative && (intersects(player) || mobs.some(intersects))) return;
 
   setBlock(x, y, z, s.id);
-  s.count--;
-  if (s.count <= 0) inventory[getSelSlot()] = null;
+  if (!player.creative) {
+    s.count--;
+    if (s.count <= 0) inventory[getSelSlot()] = null;
+  }
   triggerSwing();
   renderInventoryUI();
 }
@@ -378,6 +399,7 @@ async function init() {
   setupUI({
     onPrimary: primaryAction,
     onSecondary: secondaryAction,
+    onToggleCreative: toggleCreativeMode,
     onAdvanceTime: () => {
       if(isEndActive())return;
       setTimeOfDay((timeOfDay + 0.08) % 1);

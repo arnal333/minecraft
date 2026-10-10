@@ -5,7 +5,7 @@ import * as THREE from 'three';
 
 // ============================ CONFIG ============================
 export const CH = 16, WY = 64, SEA = 20;
-export const CHUNK_RADIUS_LOAD = 6, CHUNK_RADIUS_MESH = 4, CHUNK_RADIUS_UNLOAD = 8;
+export const CHUNK_RADIUS_LOAD = 7, CHUNK_RADIUS_MESH = 4, CHUNK_RADIUS_UNLOAD = 9;
 export const DAY_LEN = 480;
 export const MAX_ENTITIES = 16, MAX_ANIMALS = 10, MAX_MOBS = MAX_ENTITIES;
 export let SEED = (Math.random() * 2147483647) | 0;
@@ -439,13 +439,13 @@ export async function loadResourcePackTextures() {
       // de bioma por código. Sin este paso, el césped superior, las hojas y el agua
       // se ven grises aunque la textura correcta haya cargado.
       if (i === 0 || i === 23) tintCanvas(canvas, [121, 192, 90]); // césped
-      if (i === 6) tintCanvas(canvas, [89, 174, 48]);              // hojas
+      if (i === 6) tintCanvas(canvas, [66, 126, 42]);              // hojas más naturales y oscuras
       // Las hojas conservan los huecos totalmente transparentes, pero sus píxeles visibles quedan opacos.
       if (i === 6) {
         const leafCtx = canvas.getContext('2d');
         const leafData = leafCtx.getImageData(0, 0, 16, 16);
         for (let a = 3; a < leafData.data.length; a += 4) {
-          if (leafData.data[a] > 0) leafData.data[a] = 255;
+          if (leafData.data[a] > 0) leafData.data[a] = Math.min(220, Math.max(150, leafData.data[a]));
         }
         leafCtx.putImageData(leafData, 0, 0);
       }
