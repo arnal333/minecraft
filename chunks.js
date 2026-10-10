@@ -58,8 +58,15 @@ export function updateChunkStreaming(pos) {
   }
   for(let i=queue.length-1;i>=0;i--)if(!pending.has(chunkKey(queue[i].cx,queue[i].cz)))queue.splice(i,1);
 }
-export function buildDirtyMeshes() {
-  for (const key of takeDirtyChunks()) { const ch = loaded.get(key); if (ch) meshHandler(ch); }
+export function buildDirtyMeshes(maxPerFrame = 2) {
+  // Limita la reconstrucción de geometría por frame para evitar tirones al explorar.
+  let built = 0;
+  for (const key of dirty) {
+    if (built >= maxPerFrame) break;
+    dirty.delete(key);
+    const ch = loaded.get(key);
+    if (ch) { meshHandler(ch); built++; }
+  }
 }
 export function unloadChunk(cx, cz) {
   const key = chunkKey(cx, cz), ch = loaded.get(key); if (!ch) return;
