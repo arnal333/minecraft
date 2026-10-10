@@ -447,6 +447,11 @@ export function setupUI(callbacks = {}) {
   // Teclado
   document.addEventListener('keydown', e => {
     if (e.code === 'Space') e.preventDefault();
+    if (e.code === 'KeyC' && started && !player.dead && locked) {
+      cb.onToggleCreative?.();
+      e.preventDefault();
+      return;
+    }
     if (e.code === 'KeyE' && started && !player.dead) {
       if (tableOpen) setTable(false);
       else if (furnaceOpen) setFurnace(false);
