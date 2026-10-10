@@ -79,15 +79,15 @@ export function setIfAir(x,y,z,b) { if (peekBlock(x,y,z) === B.AIR) setRaw(x,y,z
 // ============================ GENERACIÓN PROCEDURAL POR CHUNK ============================
 function sampleColumn(x,z) {
   const temp=fbm(x+1000,z+1000,2,.008), hum=fbm(x-2000,z+500,2,.009);
-  const hills=fbm(x,z,4,.013), detail=fbm(x+300,z-300,2,.06);
+  const hills=fbm(x,z,3,.009), detail=fbm(x+300,z-300,2,.035);
   let mountain=fbm(x-777,z+777,3,.01);mountain=Math.max(0,mountain-.05)*2.2;mountain*=mountain;
   const hot=smooth(-.05,.42,temp), cold=1-smooth(-.34,-.05,temp);
   const wet=smooth(-.22,.32,hum), dry=1-wet;
   const jungle=hot*wet, desert=hot*dry, taiga=cold*wet;
   const mountainW=smooth(.16,.48,mountain);
-  let landH=SEA+3+hills*9+detail*2+mountain*30;
+  let landH=SEA+3+hills*6+detail*1.25+mountain*34;
   landH=landH*(1-desert*.6)+(SEA+3+hills*2)*desert*.6;
-  landH+=jungle*3+taiga;
+  landH+=jungle*2+taiga*.7;
   const continent=fbm(x-5100,z+7300,2,.0024);
   const land=smooth(-.26,.12,continent);
   let h=12+(landH-12)*land;
@@ -159,10 +159,10 @@ function generateChunk(ch) {
   }
   // Trees are chosen from absolute coordinates and written only into this chunk.
   for(let az=z0-3;az<z0+CH+3;az++)for(let ax=x0-3;ax<x0+CH+3;ax++){
-    const r=hash2(ax,az,11);if(r>=.095)continue;
+    const r=hash2(ax,az,11);if(r>=.06)continue;
     const s=sampleColumn(ax,az);let type='',height=0;
-    if(s.biome===5&&r<.095){type='jungle';height=6+Math.floor(hash2(ax,az,12)*4);}
-    else if(s.biome===6&&r<.035){type='swamp';height=3+Math.floor(hash2(ax,az,13)*3);}
+    if(s.biome===5&&r<.06){type='jungle';height=6+Math.floor(hash2(ax,az,12)*4);}
+    else if(s.biome===6&&r<.022){type='swamp';height=3+Math.floor(hash2(ax,az,13)*3);}
     else if((s.biome===3||s.biome===7||(s.biome===4&&s.ground===B.SNOW))&&r<(s.biome===7?.065:s.biome===4?.018:.022)){type='spruce';height=6+Math.floor(hash2(ax,az,14)*3);}
     else if((s.biome===0||s.biome===1||s.biome===4)&&s.ground!==B.SAND&&s.ground!==B.SNOW&&s.ground!==B.STONE&&r<(s.biome===1?.05:s.biome===4?.012:.007)){type='oak';height=4+Math.floor(hash2(ax,az,15)*3);}
     if(!type||s.h<=SEA&&s.biome!==6)continue;
