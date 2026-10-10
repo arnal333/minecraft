@@ -180,7 +180,7 @@ export const BD = {
   15: { name: 'Cofre', t: [15,21,21] },
   16: { name: 'Vidrio', t: [22,22,22] },
   17: { name: 'Pasto de jungla', t: [23,23,2], drop: 2 },
-  18: { name: 'Pasto de pantano', t: [24,24,2], drop: 2 },
+  18: { name: 'Pasto de pantano', t: [0,1,2], drop: 2 },
   19: { name: 'Pasto de taiga', t: [25,25,2], drop: 2 },
   20: { name: 'Hojas de jungla', t: [6,6,6], drop: 5 },
   21: { name: 'Marco del portal', t: [27,30,30] },
@@ -285,7 +285,7 @@ export const tileCanvases = [
     if (d > 6.5) return vary([96, 74, 44], R, 14);
     return vary(Math.floor(d) % 2 ? [182, 148, 94] : [156, 124, 76], R, 12);
   }, 6),
-  paint((x, y, R) => R() < 0.13 ? null : (R() < 0.2 ? vary([40, 100, 28], R, 20) : vary([62, 138, 42], R, 40)), 7),
+  paint((x, y, R) => R() < 0.05 ? null : (R() < 0.28 ? vary([28, 76, 22], R, 14) : vary([42, 105, 30], R, 28)), 7),
   paint((x, y, R) => {
     if (y % 4 === 3) return vary([112, 84, 48], R, 8);
     if (x === ((y >> 2) * 5 + 3) % 16) return vary([130, 98, 58], R, 8);
